@@ -8,43 +8,85 @@
 #include <fstream>
 #include <string>
 #include <sstream>
+#include <chrono>
+
 
 using namespace std;
 
 const char* file_facets = "facets.txt";
-const int max_facets_to_load = 10000;
+const int max_facets_to_load = 200;
+const int max_facets_to_generate = 10000;
+const int max_points = 10000;
+
+
+using point = pfld::Point3D < double >;
+using ptvec = pfld::ptvec;
+using facet_vec = pfld::facet_vec;
+using facet = pfld::Facet;
+
+void GetFacets(pfld::facet_vec& facets);
+void GetFieldPoints(ptvec& points, const int n);
+void Compute(void(*FieldFn)(pfld::facet_vec&, pfld::ptvec&, pfld::valvec&),
+	pfld::facet_vec& facets, pfld::ptvec& fldPoints, pfld::valvec& outFld,
+	std::string message);
 
 int _tmain(int argc, _TCHAR* argv[])
 {
-	using point = pfld::Point3D < double >;
-	using ptvec = pfld::ptvec;
-	using facet_vec = pfld::facet_vec;
-	using facet = pfld::Facet;
-
 	facet_vec facets;
-//#define CREATE_RANDOM_FACETS
+	GetFacets(facets);
+
+	std::cout << "\n" << "initialize field points..." << "\n";
+	ptvec fldPts;
+	GetFieldPoints(fldPts, max_points);
+	pfld::valvec outFld(max_points, 0.0);
+
+	void(*FieldFn)(pfld::facet_vec&, pfld::ptvec&, pfld::valvec&);
+	FieldFn = pfld::Field_Gz;
+	Compute(FieldFn, facets, fldPts, outFld, "computing facets with parallel approach...");
+
+	//FieldFn = pfld::Field_Gz__;
+	//Compute(FieldFn, facets, fldPts, outFld, "computing facets with naive approach...");
+
+	return 0;
+}
+
+
+void GetFieldPoints(ptvec& points, const int n)
+{
+	std::srand(100);
+	for (int i = 0; i < n; ++i)
+	{
+		points.emplace_back(point(rand() % 4000 - 2000, rand() % 40000 - 2000, rand() % 200));
+	}
+}
+void GetFacets(pfld::facet_vec& facets)
+{
+#define CREATE_RANDOM_FACETS
 #ifdef CREATE_RANDOM_FACETS
 	std::cout << "creating random facets..." << "\n";
 	std::srand(1);
-	const int nf = 1000000;
-	for (int i = 0; i < nf; ++i)
+	for (int i = 0; i < max_facets_to_generate; ++i)
 	{
-		ptvec v{ point(rand() % 1001, rand() % 1001, rand() % 1001), 
-			point(rand() % 1001, rand() % 1001, rand() % 1001), 
-			point(rand() % 1001, rand() % 1001, rand() % 1001) };
-		facets.emplace_back( facet(v) );
-		if( (i%1000) == 0 )
-			std::cout << "\r" << i << " of " << nf;
+		ptvec v{ point(rand() % 1001, rand() % 1001, -(rand() % 1001)),
+			point(rand() % 1001, rand() % 1001, -rand() % 1001),
+			point(rand() % 1001, rand() % 1001, -rand() % 1001) };
+		facets.emplace_back(facet(v));
+		if ((i % 1000) == 0)
+			std::cout << "\r" << i << " of " << max_facets_to_generate;
 	}
 
 	ofstream file(file_facets, ios::out);
 	if (file.is_open())
 	{
+		int i = 0;
 		for (auto it = facets.begin(); it != facets.end(); ++it)
 		{
 			ptvec& fpts = it->Data();
+			file << "Facet " << i << " " << fpts.size() << "\n";
 			for (auto itp = fpts.begin(); itp != fpts.end(); ++itp)
-				file << itp->x << " " << itp->y << " " << itp->z << "\n";
+				file << itp->x << " " << itp->y << " " << itp->z << " ";
+			file << "\n";
+			i++;
 		}
 		file.close();
 	}
@@ -55,40 +97,43 @@ int _tmain(int argc, _TCHAR* argv[])
 	{
 		std::string stmp;
 		ptvec v(3);
-		int i = 0;
+		int loadedFacets = 0;
 		while (std::getline(file, stmp))
 		{
 			std::istringstream buffer(stmp);
-			std::vector<double> vln{ std::istream_iterator<double>(buffer),
-				std::istream_iterator<double>() };
-			if (i % 3 == 0 && i!=0 )	{
+			if (stmp.find("Facet") != string::npos)
+			{
+				// facet data
+			}
+			else
+			{
+				std::vector<double> vln{ std::istream_iterator<double>(buffer),
+					std::istream_iterator<double>() };
+				for (unsigned i = 0; i < vln.size() / 3; ++i)	{
+					v[i] = point(vln[i * 3 + 0], vln[i * 3 + 1], vln[i * 3 + 2]);
+				}
 				facets.emplace_back(facet(v));
-				if (i / 3 >= max_facets_to_load)
+				loadedFacets++;
+				if (loadedFacets >= max_facets_to_load)
 					break;
 			}
-			v[i % 3] = point(vln[0], vln[1], vln[2]);
-			++i;
 		}
 		file.close();
 	}
-
+	std::cout << "loaded " << facets.size() << " facets." << "\n";
 #endif
-
-	std::cout << "\n" << "initialize field points..." << "\n";
-	const int n = 10000;
-	pfld::ptvec field_points;
-	pfld::valvec out_field(n, 0.0);
-	for (int i = 0; i < n; ++i)
-	{
-		field_points.emplace_back(point(rand() % 100 - 50, rand() % 100 - 50, rand() % 100 - 50));
-		if ((i % 1000) == 0)
-			std::cout << "\r" << i << " of " << n;
-	}
-
-	std::cout << "\n" << "initializing facets... ";
-	Field_Gz(facets, field_points, out_field);
-	std::cout << "done." << "\n";
-
-	return 0;
 }
 
+void Compute(void(*FieldFn)(pfld::facet_vec&, pfld::ptvec&, pfld::valvec&),
+	pfld::facet_vec& facets, pfld::ptvec& fldPoints, pfld::valvec& outFld,
+	std::string message)
+{
+	std::cout << "\n" << message << "\n";
+	using namespace std::chrono;
+	high_resolution_clock::time_point t1 = high_resolution_clock::now();
+	FieldFn(facets, fldPoints, outFld);
+	high_resolution_clock::time_point t2 = high_resolution_clock::now();
+	duration<double> time_span = duration_cast<duration<double>>(t2 - t1);
+	std::cout << "computation took me: " << time_span.count() << " seconds." << "\n";
+	std::cout << "done." << "\n";
+}
