@@ -14,8 +14,8 @@
 using namespace std;
 
 const char* file_facets = "facets.txt";
-const int max_facets_to_load = 200;
 const int max_facets_to_generate = 10000;
+const int max_facets_to_load = max_facets_to_generate;
 const int max_points = 10000;
 
 
@@ -59,9 +59,10 @@ void GetFieldPoints(ptvec& points, const int n)
 		points.emplace_back(point(rand() % 4000 - 2000, rand() % 40000 - 2000, rand() % 200));
 	}
 }
+
 void GetFacets(pfld::facet_vec& facets)
 {
-#define CREATE_RANDOM_FACETS
+//#define CREATE_RANDOM_FACETS
 #ifdef CREATE_RANDOM_FACETS
 	std::cout << "creating random facets..." << "\n";
 	std::srand(1);
