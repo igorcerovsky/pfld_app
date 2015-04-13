@@ -19,7 +19,7 @@ const int max_facets_to_load = max_facets_to_generate;
 const int max_points = 10000;
 
 
-using point = pfld::Point3D < double >;
+using point = pfld::point;
 using ptvec = pfld::ptvec;
 using facet_vec = pfld::facet_vec;
 using facet = pfld::Facet;
@@ -44,8 +44,13 @@ int _tmain(int argc, _TCHAR* argv[])
 	FieldFn = pfld::Field_Gz;
 	Compute(FieldFn, facets, fldPts, outFld, "computing facets with parallel approach...");
 
-	//FieldFn = pfld::Field_Gz__;
-	//Compute(FieldFn, facets, fldPts, outFld, "computing facets with naive approach...");
+	pfld::valvec outFld2(max_points, 0.0);
+	FieldFn = pfld::Field_Gz__;
+	Compute(FieldFn, facets, fldPts, outFld2, "computing facets with naive approach...");
+
+	//pfld::valvec outFld3(max_points, 0.0);
+	//FieldFn = pfld::Field_Gz_fcs;
+	//Compute(FieldFn, facets, fldPts, outFld3, "computing facets with facets division...");
 
 	return 0;
 }
