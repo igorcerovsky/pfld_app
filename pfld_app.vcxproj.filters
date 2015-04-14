@@ -47,5 +47,8 @@
     <ClCompile Include="..\pfld\pfld_compute.cpp">
       <Filter>pfld</Filter>
     </ClCompile>
+    <ClCompile Include="..\pfld\pfld_compute_prll_ft.cpp">
+      <Filter>pfld</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

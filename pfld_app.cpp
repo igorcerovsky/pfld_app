@@ -15,7 +15,7 @@ using namespace std;
 
 const char* file_facets = "facets.txt";
 const int max_facets_to_generate = 10000;
-const int max_facets_to_load = max_facets_to_generate;
+const int max_facets_to_load = max_facets_to_generate/1-5;
 const int max_points = 10000;
 
 
@@ -38,19 +38,23 @@ int _tmain(int argc, _TCHAR* argv[])
 	std::cout << "\n" << "initialize field points..." << "\n";
 	ptvec fldPts;
 	GetFieldPoints(fldPts, max_points);
+	
 	pfld::valvec outFld(max_points, 0.0);
-
 	void(*FieldFn)(pfld::facet_vec&, pfld::ptvec&, pfld::valvec&);
 	FieldFn = pfld::Field_Gz;
 	Compute(FieldFn, facets, fldPts, outFld, "computing facets with parallel approach...");
 
-	pfld::valvec outFld2(max_points, 0.0);
-	FieldFn = pfld::Field_Gz__;
-	Compute(FieldFn, facets, fldPts, outFld2, "computing facets with naive approach...");
+	//pfld::valvec outFld2(max_points, 0.0);
+	//FieldFn = pfld::Field_Gz__;
+	//Compute(FieldFn, facets, fldPts, outFld2, "computing facets with naive approach...");
 
 	//pfld::valvec outFld3(max_points, 0.0);
 	//FieldFn = pfld::Field_Gz_fcs;
 	//Compute(FieldFn, facets, fldPts, outFld3, "computing facets with facets division...");
+
+	pfld::valvec outFld4; // uninitialized for this version
+	FieldFn = pfld::Field_Gz_;
+	Compute(FieldFn, facets, fldPts, outFld4, "computing facets parallel future approach...");
 
 	return 0;
 }
