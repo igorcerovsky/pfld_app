@@ -37,7 +37,6 @@ void Compute(void(*FieldFn)(pfld::facet_vec&, pfld::ptvec&, pfld::valvec&),
 	pfld::facet_vec& facets, pfld::ptvec& fldPoints, pfld::valvec& outFld,
 	std::string message);
 
-
 int _tmain(int argc, _TCHAR* argv[])
 {
 	facet_vec facets;
