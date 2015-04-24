@@ -19,7 +19,7 @@ const char* file_facets = "pfld_facets.txt";
 const char* file_points = "pfld_points.txt";
 const char* file_results = "pfld_results.txt";
 const int max_facets_to_generate = 10000;
-const int max_facets_to_load = max_facets_to_generate/100;
+const int max_facets_to_load = max_facets_to_generate/10;
 const int max_points_to_generate = 10000;
 const int max_points_to_load = max_points_to_generate;
 
