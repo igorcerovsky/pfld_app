@@ -30,13 +30,16 @@
     <ClInclude Include="..\pfld\pfld_compute_t.hpp">
       <Filter>pfld</Filter>
     </ClInclude>
-    <ClInclude Include="..\pfld\pfld_test_io_t.h">
-      <Filter>pfld</Filter>
-    </ClInclude>
     <ClInclude Include="..\pfld\facet_t.hpp">
       <Filter>pfld</Filter>
     </ClInclude>
     <ClInclude Include="..\pfld\point.hpp">
+      <Filter>pfld</Filter>
+    </ClInclude>
+    <ClInclude Include="..\pfld\pfld_compute.hpp">
+      <Filter>pfld</Filter>
+    </ClInclude>
+    <ClInclude Include="..\pfld\pfld_test_io_t.hpp">
       <Filter>pfld</Filter>
     </ClInclude>
   </ItemGroup>
@@ -57,6 +60,9 @@
       <Filter>pfld</Filter>
     </ClCompile>
     <ClCompile Include="..\pfld\pfld_compute_prll_ft.cpp">
+      <Filter>pfld</Filter>
+    </ClCompile>
+    <ClCompile Include="..\pfld\pfld_compute.cpp">
       <Filter>pfld</Filter>
     </ClCompile>
   </ItemGroup>

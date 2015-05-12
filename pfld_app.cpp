@@ -4,7 +4,6 @@
 #include "stdafx.h"
 #include "facet.h"
 #include "pfld_compute.hpp"
-#include "pfld_compute.cpp"
 #include "pfld_test_io.h"
 #include "pfld_test_io.cpp"
 #include <iostream>
@@ -33,49 +32,46 @@ using facetVec = facet::facetvec;
 
 #define GEN_FACETS false
 #define GEN_POINTS false
-#define SAVE_RESULTS
+//#define SAVE_RESULTS
 
+using FieldFnc = void(&)(facetVec&, ptVec&, valVec&);
 
-void Compute(void(*FieldFn)(facetVec&, ptVec&, valVec&),
+void Compute(FieldFnc fnc/*void(*FieldFn)(facetVec&, ptVec&, valVec&)*/,
 	facetVec& facets, ptVec& fldPoints, valVec& outFld,
 	std::string message);
 
-int _tmain(int argc, _TCHAR* argv[])
+int _tmain(/*int argc, _TCHAR* argv[]*/)
 {
 	facetVec facets;
 	GetFacets(facets, file_facets, max_facets_to_load, GEN_FACETS);
 
-	ptVec fldPts;
-	GetFieldPoints(fldPts, file_points, max_points_to_load, GEN_POINTS);
+	ptVec fld_pts;
+	GetFieldPoints(fld_pts, file_points, max_points_to_load, GEN_POINTS);
 	
-	valVec outFld(fldPts.size(), 0.0);
-	void(*FieldFn)(facetVec&, ptVec&, valVec&);
-	FieldFn = pfld::Field_Gz;
-	Compute(FieldFn, facets, fldPts, outFld, "computing facets with parallel approach...");
+	valVec out_fld_naive(fld_pts.size(), 0.0);
+	Compute(pfld::Field_Gz__, facets, fld_pts, out_fld_naive, "computing facets with naive approach...");
 
-	//pfld::valvec outFld2(fldPts.size(), 0.0);
-	//FieldFn = pfld::Field_Gz__;
-	//Compute(FieldFn, facets, fldPts, outFld2, "computing facets with naive approach...");
+	valVec out_fld(fld_pts.size(), 0.0);
+	Compute(pfld::Field_Gz, facets, fld_pts, out_fld, "computing facets with parallel approach...");
 
-	valVec outFld4; // uninitialized for this version
-	FieldFn = pfld::Field_Gz_;
-	Compute(FieldFn, facets, fldPts, outFld4, "computing facets parallel future approach...");
+	valVec out_fld4; // uninitialized for this version
+	Compute(pfld::Field_Gz_, facets, fld_pts, out_fld4, "computing facets parallel future approach...");
 
 #ifdef SAVE_RESULTS
-	pfld::SaveResults(outFld, file_results);
+	pfld::SaveResults(out_fld, file_results);
 #endif
 
 	return 0;
 }
 
-void Compute(void(*FieldFn)(facetVec&, ptVec&, valVec&),
+void Compute(FieldFnc fnc/*void(*FieldFn)(facetVec&, ptVec&, valVec&)*/,
 	facetVec& facets, ptVec& fldPoints, valVec& outFld,
 	std::string message)
 {
 	std::cout << "\n" << message << "\n";
 	using namespace std::chrono;
 	high_resolution_clock::time_point t1 = high_resolution_clock::now();
-	FieldFn(facets, fldPoints, outFld);
+	fnc(facets, fldPoints, outFld);
 	high_resolution_clock::time_point t2 = high_resolution_clock::now();
 	duration<double> time_span = duration_cast<duration<double>>(t2 - t1);
 	std::cout << "computation took me: " << time_span.count() << " seconds." << "\n";
