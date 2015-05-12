@@ -27,13 +27,16 @@
     <ClInclude Include="targetver.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\pfld\facet.hpp">
+    <ClInclude Include="..\pfld\pfld_compute_t.hpp">
       <Filter>pfld</Filter>
     </ClInclude>
-    <ClInclude Include="..\pfld\pfld_compute.hpp">
+    <ClInclude Include="..\pfld\pfld_test_io_t.h">
       <Filter>pfld</Filter>
     </ClInclude>
-    <ClInclude Include="..\pfld\pfld_test_io.h">
+    <ClInclude Include="..\pfld\facet_t.hpp">
+      <Filter>pfld</Filter>
+    </ClInclude>
+    <ClInclude Include="..\pfld\point.hpp">
       <Filter>pfld</Filter>
     </ClInclude>
   </ItemGroup>
@@ -44,16 +47,16 @@
     <ClCompile Include="pfld_app.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\pfld\facet.cpp">
+    <ClCompile Include="..\pfld\pfld_compute_t.cpp">
       <Filter>pfld</Filter>
     </ClCompile>
-    <ClCompile Include="..\pfld\pfld_compute.cpp">
+    <ClCompile Include="..\pfld\pfld_test_io_t.cpp">
+      <Filter>pfld</Filter>
+    </ClCompile>
+    <ClCompile Include="..\pfld\facet_t.cpp">
       <Filter>pfld</Filter>
     </ClCompile>
     <ClCompile Include="..\pfld\pfld_compute_prll_ft.cpp">
-      <Filter>pfld</Filter>
-    </ClCompile>
-    <ClCompile Include="..\pfld\pfld_test_io.cpp">
       <Filter>pfld</Filter>
     </ClCompile>
   </ItemGroup>

@@ -82,7 +82,7 @@
     <ClCompile>
       <PrecompiledHeader>
       </PrecompiledHeader>
-      <WarningLevel>Level3</WarningLevel>
+      <WarningLevel>Level4</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
@@ -115,7 +115,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
-      <WarningLevel>Level3</WarningLevel>
+      <WarningLevel>Level4</WarningLevel>
       <PrecompiledHeader>
       </PrecompiledHeader>
       <Optimization>MaxSpeed</Optimization>
@@ -159,23 +159,18 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\pfld\facet.hpp" />
-    <ClInclude Include="..\pfld\pfld_compute.hpp" />
-    <ClInclude Include="..\pfld\pfld_test_io.h" />
+    <ClInclude Include="..\pfld\facet_t.hpp" />
+    <ClInclude Include="..\pfld\pfld_compute_t.hpp" />
+    <ClInclude Include="..\pfld\pfld_test_io_t.h" />
+    <ClInclude Include="..\pfld\point.hpp" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\pfld\facet.cpp" />
-    <ClCompile Include="..\pfld\pfld_compute.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="..\pfld\pfld_compute_prll_ft.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="..\pfld\pfld_test_io.cpp" />
+    <ClCompile Include="..\pfld\facet_t.cpp" />
+    <ClCompile Include="..\pfld\pfld_compute_prll_ft.cpp" />
+    <ClCompile Include="..\pfld\pfld_compute_t.cpp" />
+    <ClCompile Include="..\pfld\pfld_test_io_t.cpp" />
     <ClCompile Include="pfld_app.cpp" />
     <ClCompile Include="stdafx.cpp" />
   </ItemGroup>

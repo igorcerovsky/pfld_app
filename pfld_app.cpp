@@ -2,9 +2,11 @@
 //
 
 #include "stdafx.h"
-#include "facet.hpp"
+#include "facet.h"
 #include "pfld_compute.hpp"
+#include "pfld_compute.cpp"
 #include "pfld_test_io.h"
+#include "pfld_test_io.cpp"
 #include <iostream>
 #include <fstream>
 #include <string>
@@ -23,42 +25,39 @@ const int max_facets_to_load = max_facets_to_generate/10;
 const int max_points_to_generate = 10000;
 const int max_points_to_load = max_points_to_generate;
 
-using point = pfld::point;
-using ptvec = pfld::ptvec;
-using facet_vec = pfld::facet_vec;
-using facet = pfld::Facet;
+using facet = pfld::facet;
+using point = facet::point;
+using ptVec = facet::ptvec;
+using valVec = facet::valvec;
+using facetVec = facet::facetvec;
 
 #define GEN_FACETS false
 #define GEN_POINTS false
 #define SAVE_RESULTS
 
 
-void Compute(void(*FieldFn)(pfld::facet_vec&, pfld::ptvec&, pfld::valvec&),
-	pfld::facet_vec& facets, pfld::ptvec& fldPoints, pfld::valvec& outFld,
+void Compute(void(*FieldFn)(facetVec&, ptVec&, valVec&),
+	facetVec& facets, ptVec& fldPoints, valVec& outFld,
 	std::string message);
 
 int _tmain(int argc, _TCHAR* argv[])
 {
-	facet_vec facets;
+	facetVec facets;
 	GetFacets(facets, file_facets, max_facets_to_load, GEN_FACETS);
 
-	ptvec fldPts;
+	ptVec fldPts;
 	GetFieldPoints(fldPts, file_points, max_points_to_load, GEN_POINTS);
 	
-	pfld::valvec outFld(fldPts.size(), 0.0);
-	void(*FieldFn)(pfld::facet_vec&, pfld::ptvec&, pfld::valvec&);
+	valVec outFld(fldPts.size(), 0.0);
+	void(*FieldFn)(facetVec&, ptVec&, valVec&);
 	FieldFn = pfld::Field_Gz;
 	Compute(FieldFn, facets, fldPts, outFld, "computing facets with parallel approach...");
 
-	//pfld::valvec outFld2(max_points, 0.0);
+	//pfld::valvec outFld2(fldPts.size(), 0.0);
 	//FieldFn = pfld::Field_Gz__;
 	//Compute(FieldFn, facets, fldPts, outFld2, "computing facets with naive approach...");
 
-	//pfld::valvec outFld3(max_points, 0.0);
-	//FieldFn = pfld::Field_Gz_fcs;
-	//Compute(FieldFn, facets, fldPts, outFld3, "computing facets with facets division...");
-
-	pfld::valvec outFld4; // uninitialized for this version
+	valVec outFld4; // uninitialized for this version
 	FieldFn = pfld::Field_Gz_;
 	Compute(FieldFn, facets, fldPts, outFld4, "computing facets parallel future approach...");
 
@@ -69,8 +68,8 @@ int _tmain(int argc, _TCHAR* argv[])
 	return 0;
 }
 
-void Compute(void(*FieldFn)(pfld::facet_vec&, pfld::ptvec&, pfld::valvec&),
-	pfld::facet_vec& facets, pfld::ptvec& fldPoints, pfld::valvec& outFld,
+void Compute(void(*FieldFn)(facetVec&, ptVec&, valVec&),
+	facetVec& facets, ptVec& fldPoints, valVec& outFld,
 	std::string message)
 {
 	std::cout << "\n" << message << "\n";
